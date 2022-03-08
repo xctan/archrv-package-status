@@ -21,6 +21,9 @@ export default {
     }
   },
   mounted () {
+    // validate the log path
+    if (!this.logUri) { return }
+
     console.log(this.logUri)
     axios.get(this.logUri)
         .then(response => {

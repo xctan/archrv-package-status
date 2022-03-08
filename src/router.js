@@ -5,8 +5,14 @@ import NotFound from '@/pages/NotFound'
 const routes = [
     {
         path: '/',
-        name: 'TerminalPage',
+        name: 'Home',
         component: TerminalPage
+    },
+    {
+        path: '/logs/:extLogUri(.*)',
+        name: 'LogTerminal',
+        component: TerminalPage,
+        props: true
     },
     {
         path: '/:pathMatch(.*)*',
