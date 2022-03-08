@@ -12,6 +12,10 @@ export default {
     logUri: {
       type: String,
       required: true
+    },
+    name: {
+      type: String,
+      required: true
     }
   },
   data () {
