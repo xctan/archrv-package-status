@@ -1,5 +1,13 @@
 <template>
-  <div v-html="rendered" class="log-view"></div>
+  <div class="terminal-view">
+    <div class=terminal-loading v-if="isLoading">
+      Loading log file...
+    </div>
+    <div class="terminal-error" v-if="errorMessage">
+      Failed to load: {{ errorMessage }}
+    </div>
+    <div v-html="rendered" class="terminal-content"></div>
+  </div>
 </template>
 
 <script>
@@ -21,7 +29,9 @@ export default {
   data () {
     return {
       raw: '',
-      rendered: ''
+      rendered: '',
+      isLoading: true,
+      errorMessage: null
     }
   },
   mounted () {
@@ -34,8 +44,13 @@ export default {
           this.raw = response.data
           const ansi_up = new AnsiUp()
           this.rendered = ansi_up.ansi_to_html(this.raw).replaceAll('\u000f', '')
+          this.isLoading = false
         })
-        .catch(error => console.log(error))
+        .catch(error => {
+          console.log(error)
+          this.isLoading = false
+          this.errorMessage = error
+        })
   },
   methods: {
     // loadLog () {
@@ -52,9 +67,21 @@ export default {
 </script>
 
 <style scoped>
-.log-view {
+.terminal-content {
   font-family: monospace;
   white-space: pre-wrap;
   text-align: left;
+}
+
+.terminal-view {
+
+}
+
+.terminal-loading {
+
+}
+
+.terminal-error {
+  color: red;
 }
 </style>

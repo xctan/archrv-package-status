@@ -1,6 +1,12 @@
 <template>
-  <div>
-    <div v-for="entry in entries" :key="entry.id">
+  <div class="directory-view">
+    <div class="directory-loading" v-if="isLoading">
+      Loading directory...
+    </div>
+    <div class="directory-error" v-if="errorMessage">
+      Failed to load: {{ errorMessage }}
+    </div>
+    <div class="directory-entry" v-for="entry in entries" :key="entry.id">
       <router-link
           :to="{ name:'LogTerminal', params: { extLogUri: getFilePath(entry.name) } }"
       >
@@ -28,7 +34,9 @@ export default {
   },
   data () {
     return {
-      entries: []
+      entries: [],
+      isLoading: true,
+      errorMessage: null
     }
   },
   mounted () {
@@ -38,6 +46,7 @@ export default {
     console.log(this.logUri)
     axios.get(this.logUri)
         .then(response => {
+          // analyze html from felix build
           const $ = cheerio.load(response.data)
           const ent = $('pre').children()
           const length = ent.length
@@ -50,8 +59,13 @@ export default {
             })
             console.log(this.getFilePath(loc))
           }
+          this.isLoading = false
         })
-        .catch(error => console.log(error))
+        .catch(error => {
+          console.log(error)
+          this.isLoading = false
+          this.errorMessage = error
+        })
   },
   methods: {
     getFilePath (filename) {
@@ -62,5 +76,19 @@ export default {
 </script>
 
 <style scoped>
+.directory-view {
 
+}
+
+.directory-entry {
+
+}
+
+.directory-loading {
+
+}
+
+.directory-error {
+  color: red;
+}
 </style>
