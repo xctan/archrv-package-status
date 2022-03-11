@@ -1,7 +1,9 @@
 <template>
   <div v-if="isEmpty">No log specified</div>
-  <terminal-view v-if="isLogFile" :log-uri="logUri" :name="name"/>
-  <directory-view v-else :log-uri="logUri" :name="name"/>
+  <div v-else>
+    <terminal-view v-if="isLogFile" :log-uri="logUri" :name="name"/>
+    <directory-view v-else :log-uri="logUri" :name="name"/>
+  </div>
 </template>
 
 <script>
