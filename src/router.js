@@ -6,7 +6,7 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: TerminalPage
+        component: NotFound
     },
     {
         path: '/logs/:extLogUri(.*)',

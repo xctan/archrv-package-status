@@ -69,8 +69,9 @@ export default {
 <style scoped>
 .terminal-content {
   font-family: monospace;
-  white-space: pre-wrap;
+  white-space: pre;
   text-align: left;
+  overflow-x: scroll;
 }
 
 .terminal-view {
