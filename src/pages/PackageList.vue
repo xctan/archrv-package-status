@@ -1,6 +1,7 @@
 <template>
   <div class="package-list-container">
-    <div v-if="packages.length" class="package-list">
+    <div v-if="packages.length" class="package-list" @keydown.enter="searchPackages(search_string)">
+      <input type="text" v-model="search_string" />
       <package-item v-for="pack in packages" :pack="pack" :key="pack.pkgname" />
     </div>
     <div v-else>
@@ -15,7 +16,11 @@ import PackageItem from '@/components/PackageItem'
 
 const status_api = "https://archrv.ack.ac/status"
 
+let all_packages = []
+
 let packages = ref([])
+
+let search_string = ref("")
 
 fetch(status_api)
   .then(res => res.text())
@@ -24,8 +29,17 @@ fetch(status_api)
     if (data.status === 'success') {
       console.log(`Received ${data.packages.length} package(s)`)
       packages.value = data.packages
+      all_packages = data.packages
     }
   })
+
+const searchPackages = text => {
+  if (text !== '') {
+    packages.value = all_packages.filter(p => p.pkgname.includes(text))
+  } else {
+    packages.value = all_packages
+  }
+}
 
 </script>
 

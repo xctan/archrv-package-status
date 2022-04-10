@@ -1,16 +1,21 @@
 <template>
   <div class="package-item">
-    <span class="package-c1" v-if="pack.pkgref">
-      <a :href="pack.pkgref" target="_blank">{{ pack.pkgname }}</a>
+    <span class="package-c1">
+      <with-root v-bind:show="pack.pkgref">
+        <a :href="pack.pkgref" target="_blank">
+          {{ pack.pkgname }}
+        </a>
+      </with-root>
+      <span>&nbsp;</span>
+      <span v-if="pack.tag" v-bind:class="tagToClass(pack.tag)">[{{ pack.tag }}]</span>
     </span>
-    <span class="package-c1" v-else>{{ pack.pkgname }}</span>
 
     <span class="package-c2">{{ pack.user }}</span>
 
     <span class="package-c3" v-if="pack.stref" >
-      <a :href="pack.stref" target="_blank">{{ pack.status }}</a>
+      <a :href="pack.stref" target="_blank">{{ shortenStatus(pack.status) }}</a>
     </span>
-    <span class="package-c3" v-else>{{ pack.status }}</span>
+    <span class="package-c3" v-else>{{ shortenStatus(pack.status) }}</span>
 
     <span class="package-c4">
       <span
@@ -35,6 +40,22 @@ const props = defineProps({
     required: true
   }
 })
+
+const tagToClass = tag => {
+  switch (tag) {
+    case 'rotten': return 'package-tag-rotten'
+    case 'leaf': return 'package-tag-leaf'
+    default: return ''
+  }
+}
+
+const shortenStatus = s => {
+  switch(s) {
+    case 'pull requested': return 'pull req'
+    case 'rm requested': return 'rm req'
+    default: return s
+  }
+}
 </script>
 
 <style scoped>
@@ -65,5 +86,19 @@ const props = defineProps({
   padding-inline: 5px;
   outline: darkred solid 1px;
   border-radius: 1em;
+}
+
+.package-tag-rotten {
+  background: red;
+  color: white;
+}
+
+.package-tag-leaf {
+  background: grey;
+  color: white;
+}
+
+.package-tag-rm {
+  text-decoration: line-through;
 }
 </style>
