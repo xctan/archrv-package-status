@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TerminalPage from '@/pages/TerminalPage'
 import NotFound from '@/pages/NotFound'
+import PackageList from '@/pages/PackageList'
 
 const routes = [
     {
         path: '/',
         name: 'Home',
-        component: NotFound
+        component: PackageList
     },
     {
         path: '/logs/:extLogUri(.*)',

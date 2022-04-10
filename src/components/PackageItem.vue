@@ -1,21 +1,25 @@
 <template>
   <div class="package-item">
-    <span class="package-c1">{{ pack.name }}</span>
-    <span class="package-c2">{{ pack.user }}</span>
-    <span class="package-c3">
-      <a v-if="pack.workUrl" :href="pack.workUrl" target="_blank">
-        {{ pack.work }}
-      </a>
-      <span v-else>{{ pack.work }}</span>
+    <span class="package-c1" v-if="pack.pkgref">
+      <a :href="pack.pkgref" target="_blank">{{ pack.pkgname }}</a>
     </span>
+    <span class="package-c1" v-else>{{ pack.pkgname }}</span>
+
+    <span class="package-c2">{{ pack.user }}</span>
+
+    <span class="package-c3" v-if="pack.stref" >
+      <a :href="pack.stref" target="_blank">{{ pack.status }}</a>
+    </span>
+    <span class="package-c3" v-else>{{ pack.status }}</span>
+
     <span class="package-c4">
       <span
           v-for="mark in pack.marks"
           :title="mark.more"
-          :key="mark.desc"
+          :key="mark.mark"
           class="package-mark"
       >
-        {{ mark.desc }}{{ mark.more ? '*' : '' }}
+        {{ mark.mark }}{{ mark.more ? '*' : '' }}
       </span>
     </span>
   </div>
@@ -36,7 +40,7 @@ const props = defineProps({
 <style scoped>
 .package-item {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) 1fr 1fr minmax(0, 4fr);
+  grid-template-columns: minmax(0, 2fr) 1fr 1fr minmax(0, 2fr);
 
 }
 
