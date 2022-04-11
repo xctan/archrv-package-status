@@ -81,6 +81,7 @@ const extractUrl = t => {
   padding-inline: 5px;
   outline: solid 1px;
   border-radius: 1em;
+  white-space: nowrap;
 }
 
 .package-mark-failing {

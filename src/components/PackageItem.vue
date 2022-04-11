@@ -117,7 +117,17 @@ const shortenStatus = s => {
 }
 
 .package-c4 {
+  overflow: scroll;
+}
 
+::-webkit-scrollbar {
+  height: 1px;
+  width: 0;  /* Remove scrollbar space */
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+  background: #000000;
 }
 
 .package-effect-working {
