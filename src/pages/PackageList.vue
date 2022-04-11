@@ -1,9 +1,11 @@
 <template>
   <div class="package-list-container">
-    <div v-if="!is_loading" class="package-list" @keydown.enter="searchPackages()">
-      <div class="package-list-header" @mouseleave="searchPackages()" >
-        <input type="text" v-model="search_string" placeholder="search packages (enter)"/>
-        <n-select v-model:value="selected_users" :options="users" multiple />
+    <div v-if="!is_loading" class="package-list">
+      <div class="package-list-header">
+        <input type="text" v-model="search_string" placeholder="search packages"/>
+        <n-select v-model:value="selected_users" :options="users" multiple placeholder="user"/>
+        <n-select v-model:value="selected_status" :options="status" multiple placeholder="status"/>
+        <n-select v-model:value="selected_marks" :options="marks" multiple placeholder="marks"/>
       </div>
       <package-item v-for="pack in packages" :pack="pack" :key="pack.pkgname" />
       <div v-if="packages.length === 0" style="text-align: center;">
@@ -17,19 +19,53 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import PackageItem from '@/components/PackageItem'
 import { NSelect } from 'naive-ui'
+
+function debounce(func, timeout = 200){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
 
 const status_api = "https://archrv.ack.ac/status"
 
 let all_packages = []
 
-let packages = ref([])
-let search_string = ref("")
+let _ss = ref("")
+let search_string = computed({
+  get: () => _ss.value,
+  set: debounce(nv => _ss.value = nv)
+})
+
 let is_loading = ref(true)
+
 let users = ref([])
-let selected_users = ref([])
+let _su = ref([])
+let selected_users = computed({
+  get: () => _su.value,
+  set: debounce(nv => _su.value = nv)
+})
+
+let status = ref([])
+let _st = ref([])
+let selected_status = computed({
+  get: () => _st.value,
+  set: debounce(nv => _st.value = nv)
+})
+
+let marks = ref([
+  'failing', 'noqemu', 'unknown', 'ready', 'stuck', 'dep outdated',
+  'upstreamed', 'ignore', 'dep missing', 'outdated'
+].map(m => ({ label: m, value: m })))
+let _sm = ref([])
+let selected_marks = computed({
+  get: () => _sm.value,
+  set: debounce(nv => _sm.value = nv)
+})
 
 fetch(status_api)
   .then(res => res.text())
@@ -37,7 +73,6 @@ fetch(status_api)
     let data = JSON.parse(text)
     if (data.status === 'success') {
       console.log(`Received ${data.packages.length} package(s)`)
-      packages.value = data.packages
       all_packages = data.packages
       is_loading.value = false
 
@@ -47,31 +82,62 @@ fetch(status_api)
           user_set.add(p.user)
         }
       })
-
       users.value = Array.from(user_set).map(u => {
         return {
           label: u,
           value: u
         }
       })
+      users.value.push({ label: '(empty)', value: '' })
+
+      let status_set = new Set()
+      all_packages.forEach(p => {
+        if (p.status) {
+          status_set.add(p.status)
+        }
+      })
+      status.value = Array.from(status_set).map(u => {
+        return {
+          label: u,
+          value: u
+        }
+      })
+      status.value.push({ label: '(empty)', value: '' })
     }
   })
 
-const searchPackages = () => {
+const packages = computed(() => {
+  let filtered_packages
+
   console.log('search with', search_string.value, selected_users.value)
 
   if (search_string.value !== '') {
-    packages.value = all_packages.filter(p => p.pkgname.includes(search_string.value))
+    filtered_packages = all_packages.filter(p => p.pkgname.includes(search_string.value))
   } else {
-    packages.value = all_packages
+    filtered_packages = all_packages
   }
 
-  console.log('pkgname match:', packages.value.length)
+  console.log('pkgname match:', filtered_packages.length)
 
   if (selected_users.value.length !== 0) {
-    packages.value = packages.value.filter(p => selected_users.value.includes(p.user))
+    filtered_packages = filtered_packages.filter(p => selected_users.value.includes(p.user))
   }
-}
+
+  if (selected_status.value.length !== 0) {
+    filtered_packages = filtered_packages.filter(p => selected_status.value.includes(p.status))
+  }
+
+  if (selected_marks.value.length !== 0) {
+    filtered_packages = filtered_packages.filter(
+        p => p
+            .marks
+            .map(m => m.mark)
+            .reduce((pre, cur) => pre | selected_marks.value.includes(cur), 0)
+    )
+  }
+
+  return filtered_packages
+})
 
 </script>
 
