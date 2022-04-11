@@ -119,6 +119,7 @@ const shortenStatus = s => {
 
 .package-c4 {
   overflow: scroll;
+  scrollbar-width: none;
 }
 
 ::-webkit-scrollbar {
