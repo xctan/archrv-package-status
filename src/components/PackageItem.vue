@@ -1,5 +1,6 @@
 <template>
-  <div :class="marksEffectClass(pack.marks, pack.status)">
+  <div>
+    <div :class="marksEffectClass(pack.marks, pack.status)">
     <span class="package-c1">
       <with-root :show="pack.pkgref" :class="rmEffectClass(pack.status)">
         <a :href="pack.pkgref" target="_blank">
@@ -10,20 +11,25 @@
       <span v-if="pack.tag" :class="tagToClass(pack.tag)">[{{ pack.tag }}]</span>
     </span>
 
-    <span class="package-c2">{{ pack.user }}</span>
+      <span class="package-c2">{{ pack.user }}</span>
 
-    <span class="package-c3" v-if="pack.stref" >
+      <span class="package-c3" v-if="pack.stref" >
       <a :href="pack.stref" target="_blank">{{ shortenStatus(pack.status) }}</a>
     </span>
-    <span class="package-c3" v-else>{{ shortenStatus(pack.status) }}</span>
+      <span class="package-c3" v-else>{{ shortenStatus(pack.status) }}</span>
 
-    <span class="package-c4">
+      <span class="package-c4">
       <package-mark
           v-for="mark in pack.marks"
           :key="mark.mark"
           :mark="mark"
       />
     </span>
+    </div>
+
+    <div>
+
+    </div>
   </div>
 </template>
 

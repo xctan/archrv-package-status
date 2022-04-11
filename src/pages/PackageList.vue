@@ -1,7 +1,10 @@
 <template>
   <div class="package-list-container">
     <div v-if="!is_loading" class="package-list">
-      <div class="package-list-header">
+      <div class="package-list-toolbar">
+        <n-button @click="refreshPackage">refresh</n-button>
+      </div>
+      <div class="package-list-searchbar">
         <input type="text" v-model="search_string" placeholder="search packages"/>
         <n-select v-model:value="selected_users" :options="users" multiple placeholder="user"/>
         <n-select v-model:value="selected_status" :options="status" multiple placeholder="status"/>
@@ -19,9 +22,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import PackageItem from '@/components/PackageItem'
-import { NSelect } from 'naive-ui'
+import { NSelect, NButton } from 'naive-ui'
 
 function debounce(func, timeout = 200){
   let timer;
@@ -67,44 +70,51 @@ let selected_marks = computed({
   set: debounce(nv => _sm.value = nv)
 })
 
-fetch(status_api)
-  .then(res => res.text())
-  .then(text => {
-    let data = JSON.parse(text)
-    if (data.status === 'success') {
-      console.log(`Received ${data.packages.length} package(s)`)
-      all_packages = data.packages
-      is_loading.value = false
+const refreshPackage = () => {
+  is_loading.value = true
+  fetch(status_api)
+      .then(res => res.text())
+      .then(text => {
+        let data = JSON.parse(text)
+        if (data.status === 'success') {
+          console.log(`Received ${data.packages.length} package(s)`)
+          all_packages = data.packages
+          is_loading.value = false
 
-      let user_set = new Set()
-      all_packages.forEach(p => {
-        if (p.user) {
-          user_set.add(p.user)
-        }
-      })
-      users.value = Array.from(user_set).map(u => {
-        return {
-          label: u,
-          value: u
-        }
-      })
-      users.value.push({ label: '(empty)', value: '' })
+          let user_set = new Set()
+          all_packages.forEach(p => {
+            if (p.user) {
+              user_set.add(p.user)
+            }
+          })
+          users.value = Array.from(user_set).map(u => {
+            return {
+              label: u,
+              value: u
+            }
+          })
+          users.value.push({ label: '(empty)', value: '' })
 
-      let status_set = new Set()
-      all_packages.forEach(p => {
-        if (p.status) {
-          status_set.add(p.status)
+          let status_set = new Set()
+          all_packages.forEach(p => {
+            if (p.status) {
+              status_set.add(p.status)
+            }
+          })
+          status.value = Array.from(status_set).map(u => {
+            return {
+              label: u,
+              value: u
+            }
+          })
+          status.value.push({ label: '(empty)', value: '' })
         }
       })
-      status.value = Array.from(status_set).map(u => {
-        return {
-          label: u,
-          value: u
-        }
-      })
-      status.value.push({ label: '(empty)', value: '' })
-    }
-  })
+}
+
+onMounted(() => {
+  refreshPackage()
+})
 
 const packages = computed(() => {
   let filtered_packages
@@ -151,12 +161,16 @@ div.package-list {
   line-height: 1.5;
 }
 
-.package-list-header {
+.package-list-searchbar {
   display: grid;
   grid-template-columns: minmax(0, 2fr) 1fr 1fr minmax(0, 2fr);
   line-height: 2;
   border: solid aliceblue;
   border-width: 0.5px 0 0.5px 0;
+}
+
+.package-list-toolbar {
+
 }
 
 @media (min-aspect-ratio: 11/10) {
