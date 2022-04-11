@@ -106,6 +106,7 @@ const shortenStatus = s => {
 
 .package-c1 {
   overflow: hidden;
+  padding-left: 4.8px;
 }
 
 .package-c2 {
