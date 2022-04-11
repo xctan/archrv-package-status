@@ -1,4 +1,7 @@
 <template>
+  <metainfo>
+    <template v-slot:title="{ content }">{{ content ? `${content} | SITE_NAME` : `SITE_NAME` }}</template>
+  </metainfo>
   <div class="app-container">
     <div class="app-header">
       <n-menu mode="horizontal" :options="headerOptions"></n-menu>
@@ -15,7 +18,7 @@ import { RouterView } from 'vue-router'
 
 const headerOptions = [
   {
-    label: 'ArchRV Dashboard',
+    label: 'ArchRV Package Status',
     key: 'arch-rv'
   }
 ]
