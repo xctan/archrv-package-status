@@ -1,13 +1,13 @@
 <template>
-  <div class="package-item">
+  <div :class="marksEffectClass(pack.marks, pack.status)">
     <span class="package-c1">
-      <with-root v-bind:show="pack.pkgref">
+      <with-root :show="pack.pkgref" :class="rmEffectClass(pack.status)">
         <a :href="pack.pkgref" target="_blank">
           {{ pack.pkgname }}
         </a>
       </with-root>
       <span>&nbsp;</span>
-      <span v-if="pack.tag" v-bind:class="tagToClass(pack.tag)">[{{ pack.tag }}]</span>
+      <span v-if="pack.tag" :class="tagToClass(pack.tag)">[{{ pack.tag }}]</span>
     </span>
 
     <span class="package-c2">{{ pack.user }}</span>
@@ -18,20 +18,18 @@
     <span class="package-c3" v-else>{{ shortenStatus(pack.status) }}</span>
 
     <span class="package-c4">
-      <span
+      <package-mark
           v-for="mark in pack.marks"
-          :title="mark.more"
           :key="mark.mark"
-          class="package-mark"
-      >
-        {{ mark.mark }}{{ mark.more ? '*' : '' }}
-      </span>
+          :mark="mark"
+      />
     </span>
   </div>
 </template>
 
 <script setup>
 import { defineProps } from 'vue'
+import PackageMark from '@/components/PackageMark'
 
 /* eslint-disable no-unused-vars */
 const props = defineProps({
@@ -49,6 +47,45 @@ const tagToClass = tag => {
   }
 }
 
+const rmEffectClass = s => {
+  if (s === 'rm requested') return 'package-tag-rm'
+  return ''
+}
+
+const marksEffectClass = (marks, status) => {
+  let base = 'package-item '
+  marks.forEach(m => {
+    switch (m.mark) {
+      case 'ready':
+        base += 'package-effect-ready '
+        break
+      case 'noqemu':
+        base += 'package-effect-ready '
+        break
+      case 'unknown':
+        base += 'package-effect-unknown '
+        break
+      default:
+    }
+  })
+  switch (status) {
+    case 'merged':
+      base += 'package-effect-ready '
+      break
+    case 'working':
+      base += 'package-effect-working '
+      break
+    case 'pull requested':
+      base += 'package-effect-pending'
+      break
+    case 'rm requested':
+      base += 'package-effect-pending'
+      break
+    default:
+  }
+  return base
+}
+
 const shortenStatus = s => {
   switch(s) {
     case 'pull requested': return 'pull req'
@@ -62,7 +99,9 @@ const shortenStatus = s => {
 .package-item {
   display: grid;
   grid-template-columns: minmax(0, 2fr) 1fr 1fr minmax(0, 2fr);
-
+  line-height: 2;
+  border: solid aliceblue;
+  border-width: 0.5px 0 0.5px 0;
 }
 
 .package-c1 {
@@ -81,15 +120,24 @@ const shortenStatus = s => {
 
 }
 
-.package-mark {
-  margin-inline: 4px;
-  padding-inline: 5px;
-  outline: darkred solid 1px;
-  border-radius: 1em;
+.package-effect-working {
+  background: lightpink;
+}
+
+.package-effect-ready {
+  background: lightgreen;
+}
+
+.package-effect-pending {
+  background: lightblue;
+}
+
+.package-effect-unknown {
+  background: yellow;
 }
 
 .package-tag-rotten {
-  background: red;
+  background: darkred;
   color: white;
 }
 
@@ -99,6 +147,6 @@ const shortenStatus = s => {
 }
 
 .package-tag-rm {
-  text-decoration: line-through;
+  text-decoration: line-through red 2px;
 }
 </style>

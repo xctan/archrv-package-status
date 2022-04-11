@@ -1,11 +1,14 @@
 <template>
   <div class="package-list-container">
-    <div v-if="packages.length" class="package-list" @keydown.enter="searchPackages(search_string)">
-      <input type="text" v-model="search_string" />
+    <div v-if="!is_loading" class="package-list" @keydown.enter="searchPackages(search_string)">
+      <input type="text" v-model="search_string" placeholder="search packages"/>
       <package-item v-for="pack in packages" :pack="pack" :key="pack.pkgname" />
+      <div v-if="packages.length === 0" style="text-align: center;">
+        nothing here!
+      </div>
     </div>
     <div v-else>
-      loading data...
+      <div style="text-align: center;">loading data...</div>
     </div>
   </div>
 </template>
@@ -19,8 +22,8 @@ const status_api = "https://archrv.ack.ac/status"
 let all_packages = []
 
 let packages = ref([])
-
 let search_string = ref("")
+let is_loading = ref(true)
 
 fetch(status_api)
   .then(res => res.text())
@@ -30,6 +33,7 @@ fetch(status_api)
       console.log(`Received ${data.packages.length} package(s)`)
       packages.value = data.packages
       all_packages = data.packages
+      is_loading.value = false
     }
   })
 
@@ -49,7 +53,7 @@ div.package-list-container {
 }
 
 div.package-list {
-  font-family: Consolas,Ubuntu Mono,Menlo,monospace;
+  font-family: Consolas, Ubuntu Mono, Menlo, monospace;
   line-height: 1.5;
 }
 
