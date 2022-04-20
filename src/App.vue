@@ -53,6 +53,11 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
     background: #333;
     color: white;
   }
+
+  html {
+    background: #333;
+    color: white;
+  }
 }
 
 .app-header {
