@@ -3,9 +3,10 @@
     <div v-if="!is_loading" class="package-list">
       <div class="package-list-toolbar">
         <n-button @click="refreshPackage">refresh</n-button>
+        <n-button @click="cleanCriteria">reset search</n-button>
       </div>
       <div class="package-list-searchbar">
-        <input type="text" v-model="search_string" placeholder="search packages"/>
+        <n-input type="text" v-model:value="search_string" placeholder="search packages"/>
         <n-select v-model:value="selected_users" :options="users" multiple placeholder="user"/>
         <n-select v-model:value="selected_status" :options="status" multiple placeholder="status"/>
         <n-select v-model:value="selected_marks" :options="marks" multiple placeholder="marks"/>
@@ -24,7 +25,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import PackageItem from '@/components/PackageItem'
-import { NSelect, NButton } from 'naive-ui'
+import { NSelect, NButton, NInput } from 'naive-ui'
 
 function debounce(func, timeout = 200){
   let timer;
@@ -69,6 +70,13 @@ let selected_marks = computed({
   get: () => _sm.value,
   set: debounce(nv => _sm.value = nv)
 })
+
+const cleanCriteria = () => {
+  _ss.value = ""
+  _su.value = []
+  _st.value = []
+  _sm.value = []
+}
 
 const refreshPackage = () => {
   is_loading.value = true
