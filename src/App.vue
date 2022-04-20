@@ -1,7 +1,4 @@
 <template>
-  <metainfo>
-    <template v-slot:title="{ content }">{{ content ? `${content} | SITE_NAME` : `SITE_NAME` }}</template>
-  </metainfo>
   <div class="app-container">
     <div class="app-header">
       <n-menu mode="horizontal" :options="headerOptions"></n-menu>
@@ -34,6 +31,13 @@ const headerOptions = [
   left: 0;
   right: 0;
   position: absolute;
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-container {
+    background: #333;
+    color: white;
+  }
 }
 
 .app-header {

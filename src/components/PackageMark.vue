@@ -123,4 +123,10 @@ const extractUrl = t => {
   text-shadow: 0 0 3px deepskyblue;
 }
 
+@media (prefers-color-scheme: dark) {
+  a {
+    color: cyan;
+  }
+}
+
 </style>

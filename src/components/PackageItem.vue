@@ -60,20 +60,6 @@ const rmEffectClass = s => {
 
 const marksEffectClass = (marks, status) => {
   let base = 'package-item '
-  marks.forEach(m => {
-    switch (m.mark) {
-      case 'ready':
-        base += 'package-effect-ready '
-        break
-      case 'noqemu':
-        base += 'package-effect-ready '
-        break
-      case 'unknown':
-        base += 'package-effect-unknown '
-        break
-      default:
-    }
-  })
   switch (status) {
     case 'merged':
       base += 'package-effect-ready '
@@ -89,6 +75,20 @@ const marksEffectClass = (marks, status) => {
       break
     default:
   }
+  marks.forEach(m => {
+    switch (m.mark) {
+      case 'ready':
+        base += 'package-effect-ready '
+        break
+      case 'noqemu':
+        base += 'package-effect-ready '
+        break
+      case 'unknown':
+        base += 'package-effect-unknown '
+        break
+      default:
+    }
+  })
   return base
 }
 
@@ -108,6 +108,12 @@ const shortenStatus = s => {
   line-height: 2;
   border: solid aliceblue;
   border-width: 0.5px 0 0.5px 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .package-item {
+    background: #333;
+  }
 }
 
 .package-c1 {
@@ -167,4 +173,31 @@ const shortenStatus = s => {
 .package-tag-rm {
   text-decoration: line-through red 2px;
 }
+
+@media (prefers-color-scheme: dark) {
+  .package-c1 {
+    color: cyan;
+  }
+
+  a {
+    color: cyan;
+  }
+
+  .package-effect-working {
+    background: mediumvioletred;
+  }
+
+  .package-effect-ready {
+    background: olivedrab;
+  }
+
+  .package-effect-unknown {
+    background: chocolate;
+  }
+
+  .package-effect-pending {
+    background: blueviolet;
+  }
+}
+
 </style>
