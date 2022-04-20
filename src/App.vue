@@ -1,18 +1,20 @@
 <template>
   <n-config-provider :theme="colorScheme">
-    <div class="app-container">
-      <div class="app-header">
-        <n-menu mode="horizontal" :options="headerOptions"></n-menu>
+    <n-message-provider>
+      <div class="app-container">
+        <div class="app-header">
+          <n-menu mode="horizontal" :options="headerOptions"></n-menu>
+        </div>
+        <div class="app-body" style="position: relative;">
+          <router-view :key="$route.fullPath" position="absolute"/>
+        </div>
       </div>
-      <div class="app-body" style="position: relative;">
-        <router-view :key="$route.fullPath" position="absolute"/>
-      </div>
-    </div>
+    </n-message-provider>
   </n-config-provider>
 </template>
 
 <script setup>
-import { NMenu, NConfigProvider, darkTheme, lightTheme } from 'naive-ui'
+import { NMenu, NConfigProvider, darkTheme, lightTheme, NMessageProvider } from 'naive-ui'
 import { RouterView } from 'vue-router'
 import { ref } from 'vue'
 

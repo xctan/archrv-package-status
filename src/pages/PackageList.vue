@@ -25,7 +25,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import PackageItem from '@/components/PackageItem'
-import { NSelect, NButton, NInput } from 'naive-ui'
+import { NSelect, NButton, NInput, useMessage } from 'naive-ui'
 
 function debounce(func, timeout = 200){
   let timer;
@@ -35,9 +35,24 @@ function debounce(func, timeout = 200){
   };
 }
 
+const message = useMessage();
+
 const status_api = "https://archrv.ack.ac/status"
 
-let all_packages = []
+const save_packages = packages => {
+  localStorage.setItem("packages", JSON.stringify(packages))
+}
+
+const load_packages = () => {
+  const packages = localStorage.getItem("packages")
+  if (packages) {
+    return JSON.parse(packages)
+  } else {
+    return []
+  }
+}
+
+let all_packages = load_packages()
 
 let _ss = ref("")
 let search_string = computed({
@@ -78,8 +93,9 @@ const cleanCriteria = () => {
   _sm.value = []
 }
 
+
 const refreshPackage = () => {
-  is_loading.value = true
+  message.info('refreshing packages')
   fetch(status_api)
       .then(res => res.text())
       .then(text => {
@@ -87,6 +103,7 @@ const refreshPackage = () => {
         if (data.status === 'success') {
           console.log(`Received ${data.packages.length} package(s)`)
           all_packages = data.packages
+          save_packages(all_packages)
           is_loading.value = false
 
           let user_set = new Set()
@@ -117,10 +134,18 @@ const refreshPackage = () => {
           })
           status.value.push({ label: '(empty)', value: '' })
         }
+        message.info('successfully refreshed packages')
+      })
+      .catch(err => {
+        message.error(`failed to refresh packages: ${err}`)
+        console.log(err)
       })
 }
 
 onMounted(() => {
+  if (all_packages.length !== 0) {
+    is_loading.value = false
+  }
   refreshPackage()
 })
 
